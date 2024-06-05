@@ -97,7 +97,7 @@ namespace ContentsGenerator
             int spacing = 20;
             int boxHeaderExtraHeight = 50;
 
-            int totalImageWidth = ((chapters.Count + 1) * boxWidth) + ((chapters.Count + 1) * spacing);
+            int totalImageWidth = ((chapters.Count) * boxWidth) + ((chapters.Count + 1) * spacing);
 
             int totalImageHeight = 0;
 
