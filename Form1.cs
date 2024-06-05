@@ -1,6 +1,7 @@
 namespace ContentsGenerator
 {
     using System.Diagnostics.Contracts;
+    using static System.Collections.Specialized.BitVector32;
     using Excel = Microsoft.Office.Interop.Excel;
     public partial class frmMain : Form
     {
@@ -64,13 +65,17 @@ namespace ContentsGenerator
             }
 
             int current_id = 1;
+            int current_chapter = 1;
             foreach (var chapter in list)
             {
                 foreach (var section in chapter)
                 {
-                    generateIamge(list, current_id.ToString(), chapter[0], section);
+                    generateIamge(list, current_id.ToString(), chapter[0], section, current_chapter);
                     current_id++;
+                    //break;
                 }
+                current_chapter++;
+                //break; 
             }
 
             xlApp.Quit();
@@ -89,13 +94,17 @@ namespace ContentsGenerator
             }
         }
 
-        public void generateIamge(List<List<string>> chapters,string prepend_filename, string current_chapter, string highlited_item = "")
+        public void generateIamge(List<List<string>> chapters,string prepend_filename, string current_chapter, string highlited_item, int current_chapter_id)
         {
             string the_chapter = "";
-            int boxWidth = 110;
-            int boxHeight = 50;
-            int spacing = 20;
+            int boxWidth = 130;
+            int boxHeight = 40;
+            int spacing = 10;
             int boxHeaderExtraHeight = 50;
+            int y_offset = 50;
+            
+            int up_to_box = int.Parse(prepend_filename);
+            int current_box = 0;
 
             int totalImageWidth = ((chapters.Count) * boxWidth) + ((chapters.Count + 1) * spacing);
 
@@ -111,7 +120,7 @@ namespace ContentsGenerator
                 }
             }
 
-            totalImageHeight = ((spacing + boxHeight) * numberofboxes) + spacing;
+            totalImageHeight = ((spacing + boxHeight) * numberofboxes) + spacing + 40;
 
             Bitmap bitmap = new Bitmap(totalImageWidth, totalImageHeight, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             Graphics graphics = Graphics.FromImage(bitmap);
@@ -121,16 +130,29 @@ namespace ContentsGenerator
             Brush fillBruish = new SolidBrush(lblBGColour.BackColor);
             Brush brushWhite = new SolidBrush(Color.White);
             Brush brushShaddow = new SolidBrush(Color.CadetBlue);
+            Brush brushPast = new SolidBrush(Color.LightGray);
             Brush brushBlack = new SolidBrush(Color.Black);
             Font font = new Font("Arial", 8, FontStyle.Regular);
+            Font fontBold = new Font("Arial", 8, FontStyle.Bold);
             Font fontUnderline = new Font("Arial", 8, FontStyle.Underline);
+            Font fontBoldUnderline = new Font("Arial", 10, FontStyle.Bold | FontStyle.Underline);
+            Font fontHeader = new Font("Arial", 12, FontStyle.Bold | FontStyle.Underline);
 
-            int x = 0;            
-           
+            int x = 0;
+
+
+            StringFormat sfHeader = new StringFormat();
+            sfHeader.LineAlignment = StringAlignment.Center;
+            sfHeader.Alignment = StringAlignment.Center;
+            
+            graphics.FillRectangle(brushWhite, spacing, spacing, ((chapters.Count - 1) * (boxWidth + spacing)) + boxWidth, 40);
+
+            var headerRectangle = new Rectangle(spacing, spacing, ((chapters.Count - 1) * (boxWidth + spacing)) + boxWidth, 40);
+            graphics.DrawString("How do farmers use the internet?", fontHeader, brushBlack, headerRectangle, sfHeader);
 
             foreach (var section in chapters)
             {
-                //y = 0;
+                
                 
                 //foreach (var section in chapters)
                 for (int y = 0; y < section.Count - 1; y++) 
@@ -145,73 +167,89 @@ namespace ContentsGenerator
                     if (y == 0)
                     {
                         the_chapter = section[0];
-                        graphics.FillRectangle(fillBruish, x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing), boxWidth, (boxHeight + boxHeaderExtraHeight));
+                        graphics.FillRectangle(fillBruish, x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing) + y_offset, boxWidth, (boxHeight + boxHeaderExtraHeight));
 
-                        Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing), boxWidth, (boxHeight + boxHeaderExtraHeight) / 2);
+                        Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing) - 5 + y_offset, boxWidth, (boxHeight + boxHeaderExtraHeight) / 2);
 
                         StringFormat sf = new StringFormat();
                         sf.LineAlignment = StringAlignment.Center;
                         sf.Alignment = StringAlignment.Center;
-                        graphics.DrawString(section[0], fontUnderline, brushWhite, r, sf);
+                        graphics.DrawString(section[0], fontBoldUnderline, brushWhite, r, sf);
 
                         //Second text
-                         r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + 5 + spacing + (y * spacing) + ((boxHeight + boxHeaderExtraHeight) / 3), boxWidth, (boxHeight + boxHeaderExtraHeight) / 2 );
-
-                        graphics.DrawString(getNextItem(section, y), font , brushWhite, r, sf);
+                        r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + 5 + spacing + (y * spacing) + ((boxHeight + boxHeaderExtraHeight) / 3) + y_offset , boxWidth, (boxHeight + boxHeaderExtraHeight) /1 );
+                        sf.LineAlignment = StringAlignment.Near;
+                        graphics.DrawString(getNextItem(section, y), fontBold, brushWhite, r, sf);
                         
                     }
                   else
                     {
                         if (highlited_item == getNextItem(section, y) && the_chapter == current_chapter)
                         {
-                            graphics.FillRectangle(brushShaddow, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
+                            
+                            //Current Item
+                            graphics.FillRectangle(brushShaddow, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
+                            
 
-                            graphics.DrawRectangle(pen, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
+                            graphics.DrawRectangle(pen, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
 
-                            Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
+                            Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
 
                             StringFormat sf = new StringFormat();
                             sf.LineAlignment = StringAlignment.Center;
                             sf.Alignment = StringAlignment.Center;
-                            graphics.DrawString(getNextItem(section, y), font, brushWhite, r, sf);
+                            graphics.DrawString(getNextItem(section, y), fontBold, brushWhite, r, sf);
 
                         }
                         else
                         {
-                            graphics.FillRectangle(brushWhite, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
 
-                            graphics.DrawRectangle(pen, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
+                            if (current_box + current_chapter_id < up_to_box)
 
-                            Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
+                            {
+                                graphics.FillRectangle(brushPast, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
+                            }
+                            else
+                            {
+                                graphics.FillRectangle(brushWhite, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
+                            }
+
+
+                            //graphics.FillRectangle(brushWhite, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
+
+                            graphics.DrawRectangle(pen, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
+
+                            Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing) + y_offset, boxWidth, boxHeight);
 
                             StringFormat sf = new StringFormat();
                             sf.LineAlignment = StringAlignment.Center;
                             sf.Alignment = StringAlignment.Center;
-                            graphics.DrawString(getNextItem(section, y), font, brushBlack, r, sf);
+                            graphics.DrawString(getNextItem(section, y), fontBold, brushBlack, r, sf);
 
                         }
 
                     }
 
-                    //y++;
-                    var filename = "images\\" + prepend_filename + " - " + cleanFilename(current_chapter + " - " + highlited_item + ".png");
-                
-                    bitmap.Save(filename);
+        //y++;
+                current_box++;
 
                 }
+                var filename = "images\\" + prepend_filename + " - " + cleanFilename(current_chapter + " - " + highlited_item + ".png");
+
+                bitmap.Save(filename);
+
                 x++;
                 the_chapter = current_chapter;
+                
             }
-
-
 
 
 
             //bitmap.Save(@"images\\base_image.png");
 
-           // pictureBox1.Image = Image.FromFile(@"images\\base_image.png");
+            // pictureBox1.Image = Image.FromFile(@"images\\base_image.png");
 
-           
+
         }
 
         public string cleanFilename(string fileName)
