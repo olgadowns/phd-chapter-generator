@@ -127,6 +127,7 @@ namespace ContentsGenerator
 
             //Draw frames
             Pen pen = new Pen(lblBGColour.BackColor, 2);
+            Pen penHeader = new Pen(lblBGColour.BackColor, 1);
             Brush fillBruish = new SolidBrush(lblBGColour.BackColor);
             Brush brushWhite = new SolidBrush(Color.White);
             Brush brushShaddow = new SolidBrush(Color.CadetBlue);
@@ -136,19 +137,20 @@ namespace ContentsGenerator
             Font fontBold = new Font("Arial", 8, FontStyle.Bold);
             Font fontUnderline = new Font("Arial", 8, FontStyle.Underline);
             Font fontBoldUnderline = new Font("Arial", 10, FontStyle.Bold | FontStyle.Underline);
-            Font fontHeader = new Font("Arial", 12, FontStyle.Bold | FontStyle.Underline);
+            Font fontHeader = new Font("Arial", 11);
 
             int x = 0;
 
 
             StringFormat sfHeader = new StringFormat();
             sfHeader.LineAlignment = StringAlignment.Center;
-            sfHeader.Alignment = StringAlignment.Center;
-            
-            graphics.FillRectangle(brushWhite, spacing, spacing, ((chapters.Count - 1) * (boxWidth + spacing)) + boxWidth, 40);
+            sfHeader.Alignment = StringAlignment.Center;                     
 
-            var headerRectangle = new Rectangle(spacing, spacing, ((chapters.Count - 1) * (boxWidth + spacing)) + boxWidth, 40);
-            graphics.DrawString("How do farmers use the internet?", fontHeader, brushBlack, headerRectangle, sfHeader);
+            Rectangle headerRectangle = new Rectangle(spacing, spacing, ((chapters.Count - 1) * (boxWidth + spacing)) + boxWidth, 40);
+
+            graphics.DrawRectangle(penHeader, headerRectangle);
+
+            graphics.DrawString("Measuring and quantifying the benefits of improved Internet connectivity in regional and remote Australia and its effect on adoption of technology", fontHeader, brushBlack, headerRectangle, sfHeader);
 
             foreach (var section in chapters)
             {
