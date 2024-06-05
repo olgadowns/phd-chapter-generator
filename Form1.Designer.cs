@@ -34,11 +34,10 @@
             lblFileName = new Label();
             lblGenerate = new Button();
             imageList1 = new ImageList(components);
-            pictureBox1 = new PictureBox();
             colorDialog1 = new ColorDialog();
             lblBGColour = new Label();
             label2 = new Label();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            txtLog = new TextBox();
             SuspendLayout();
             // 
             // openFileDialog1
@@ -81,15 +80,6 @@
             imageList1.ImageSize = new Size(16, 16);
             imageList1.TransparentColor = Color.Transparent;
             // 
-            // pictureBox1
-            // 
-            pictureBox1.Location = new Point(231, 27);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(641, 622);
-            pictureBox1.TabIndex = 3;
-            pictureBox1.TabStop = false;
-            pictureBox1.Click += pictureBox1_Click;
-            // 
             // lblBGColour
             // 
             lblBGColour.AutoSize = true;
@@ -110,21 +100,28 @@
             label2.TabIndex = 5;
             label2.Text = "Background Colour";
             // 
+            // txtLog
+            // 
+            txtLog.Location = new Point(181, 12);
+            txtLog.Multiline = true;
+            txtLog.Name = "txtLog";
+            txtLog.Size = new Size(691, 637);
+            txtLog.TabIndex = 6;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(884, 661);
+            Controls.Add(txtLog);
             Controls.Add(label2);
             Controls.Add(lblBGColour);
-            Controls.Add(pictureBox1);
             Controls.Add(lblGenerate);
             Controls.Add(lblFileName);
             Controls.Add(button1);
             Name = "frmMain";
             Text = "Contents Creator";
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -136,9 +133,9 @@
         private Label lblFileName;
         private Button lblGenerate;
         private ImageList imageList1;
-        private PictureBox pictureBox1;
         private ColorDialog colorDialog1;
         private Label lblBGColour;
         private Label label2;
+        private TextBox txtLog;
     }
 }

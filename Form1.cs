@@ -89,20 +89,21 @@ namespace ContentsGenerator
             }
         }
 
-        public void generateIamge(List<List<string>> items,string prepend_filename, string current_chapter, string highlited_item = "")
+        public void generateIamge(List<List<string>> chapters,string prepend_filename, string current_chapter, string highlited_item = "")
         {
             string the_chapter = "";
             int boxWidth = 110;
             int boxHeight = 50;
             int spacing = 20;
-            int boxHeaderExtraHeight = 30;
+            int boxHeaderExtraHeight = 50;
 
-            int totalImageWidth = (items.Count * boxWidth) + (items.Count + 1 * spacing);
+            int totalImageWidth = ((chapters.Count + 1) * boxWidth) + ((chapters.Count + 1) * spacing);
 
             int totalImageHeight = 0;
 
             int numberofboxes = 1;
-            foreach (var l in items)
+
+            foreach (var l in chapters)
             {
                 if (l.Count > numberofboxes)
                 {
@@ -127,22 +128,23 @@ namespace ContentsGenerator
             int x = 0;            
            
 
-            foreach (var chapters in items)
+            foreach (var section in chapters)
             {
                 //y = 0;
                 
                 //foreach (var section in chapters)
-                for (int y = 0; y < chapters.Count - 1; y++) 
+                for (int y = 0; y < section.Count - 1; y++) 
                 {
                    
-                    
+                    txtLog.Text += getNextItem(section, y) + "\r\n";
+
                     int centreX = (int)(x * boxWidth + spacing + (spacing * x) + 10);
                     int centreY = (int)y * boxHeight + spacing + (y * spacing);
 
 
                     if (y == 0)
                     {
-                        the_chapter = chapters[0];
+                        the_chapter = section[0];
                         graphics.FillRectangle(fillBruish, x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing), boxWidth, (boxHeight + boxHeaderExtraHeight));
 
                         Rectangle r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing), boxWidth, (boxHeight + boxHeaderExtraHeight) / 2);
@@ -150,17 +152,17 @@ namespace ContentsGenerator
                         StringFormat sf = new StringFormat();
                         sf.LineAlignment = StringAlignment.Center;
                         sf.Alignment = StringAlignment.Center;
-                        graphics.DrawString(chapters[0], fontUnderline, brushWhite, r, sf);
+                        graphics.DrawString(section[0], fontUnderline, brushWhite, r, sf);
 
                         //Second text
-                         r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + spacing + (y * spacing) + ((boxHeight + boxHeaderExtraHeight) / 3), boxWidth, (boxHeight + boxHeaderExtraHeight) / 2 );
+                         r = new Rectangle(x * boxWidth + spacing + (spacing * x), y * (boxHeight + boxHeaderExtraHeight) + 5 + spacing + (y * spacing) + ((boxHeight + boxHeaderExtraHeight) / 3), boxWidth, (boxHeight + boxHeaderExtraHeight) / 2 );
 
-                        graphics.DrawString(getNextItem(chapters, y), font , brushWhite, r, sf);
+                        graphics.DrawString(getNextItem(section, y), font , brushWhite, r, sf);
                         
                     }
                   else
                     {
-                        if (highlited_item == getNextItem(chapters, y) && the_chapter == current_chapter)
+                        if (highlited_item == getNextItem(section, y) && the_chapter == current_chapter)
                         {
                             graphics.FillRectangle(brushShaddow, x * boxWidth + spacing + (spacing * x), y * boxHeight + spacing + boxHeaderExtraHeight + (y * spacing), boxWidth, boxHeight);
 
@@ -171,7 +173,7 @@ namespace ContentsGenerator
                             StringFormat sf = new StringFormat();
                             sf.LineAlignment = StringAlignment.Center;
                             sf.Alignment = StringAlignment.Center;
-                            graphics.DrawString(getNextItem(chapters, y), font, brushWhite, r, sf);
+                            graphics.DrawString(getNextItem(section, y), font, brushWhite, r, sf);
 
                         }
                         else
@@ -185,7 +187,7 @@ namespace ContentsGenerator
                             StringFormat sf = new StringFormat();
                             sf.LineAlignment = StringAlignment.Center;
                             sf.Alignment = StringAlignment.Center;
-                            graphics.DrawString(getNextItem(chapters, y), font, brushBlack, r, sf);
+                            graphics.DrawString(getNextItem(section, y), font, brushBlack, r, sf);
 
                         }
 
